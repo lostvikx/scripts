@@ -6,21 +6,21 @@ model="anime"
 scale="1"
 
 print_usage() {
-	echo "Usage: image-upscaler image1 [image2 ...] [OPTIONS]"
-	echo
+    echo "Usage: image-upscaler image1 [image2 ...] [OPTIONS]"
+    echo
     echo "Upscale image(s) to 4x using a selected model. Supports downscaling with a scale factor."
-	echo
-	echo "Arguments:"
-	echo "    <image>                    Path to input image file."
-	echo
-	echo "Options:"
-	echo "    -m, --model <string>       Upscaling model: 'anime' or 'real'."
-	echo "                               (default: anime)"
-	echo
-	echo "    -s, --scale <float>        Resize image scale between 0 and 1."
-	echo "                               (default: 1)"
-	echo
-	echo "    -h, --help                 Display this help message."
+    echo
+    echo "Arguments:"
+    echo "    <image>                    Path to input image file."
+    echo
+    echo "Options:"
+    echo "    -m, --model <string>       Upscaling model: 'anime' or 'real'."
+    echo "                               (default: anime)"
+    echo
+    echo "    -s, --scale <float>        Resize image scale between 0 and 1."
+    echo "                               (default: 1)"
+    echo
+    echo "    -h, --help                 Display this help message."
 }
 
 if [[ "$#" -eq 0 ]]; then
@@ -32,38 +32,38 @@ images=()
 
 # Handle arguments and options.
 while [[ $# -gt 0 ]]; do
-	case "$1" in
-		-m|--model)
-			shift
-			if [[ "$1" == "anime" || "$1" == "real" ]]; then
-				model="$1"
-			else
-				echo "Error: Invalid model. Use 'anime' or 'real'."
-				exit 1
-			fi
-			;;
-		-s|--scale)
-			shift
-			if [[ "$1" =~ ^0?\.[0-9]+$ || "$1" == "1" ]]; then
-				scale="$1"
-			else
-				echo "Error: Scale must be a float between 0 and 1."
-				exit 1
-			fi
-			;;
-		-h|--help)
-			print_usage
-			exit 0
-			;;
-		-*)
-			echo "Error: Unknown option $1"
-			exit 1
-			;;
-		*)
+    case "$1" in
+        -m|--model)
+            shift
+            if [[ "$1" == "anime" || "$1" == "real" ]]; then
+                model="$1"
+            else
+                echo "Error: Invalid model. Use 'anime' or 'real'."
+                exit 1
+            fi
+            ;;
+        -s|--scale)
+            shift
+            if [[ "$1" =~ ^0?\.[0-9]+$ || "$1" == "1" ]]; then
+                scale="$1"
+            else
+                echo "Error: Scale must be a float between 0 and 1."
+                exit 1
+            fi
+            ;;
+        -h|--help)
+            print_usage
+            exit 0
+            ;;
+        -*)
+            echo "Error: Unknown option $1"
+            exit 1
+            ;;
+        *)
             images+=("$1")
-			;;
-	esac
-	shift
+            ;;
+    esac
+    shift
 done
 
 if [[ "${#images[@]}" -eq 0 ]]; then
@@ -72,9 +72,9 @@ if [[ "${#images[@]}" -eq 0 ]]; then
 fi
 
 if [[ "$model" == "anime" ]]; then
-	model_name="realesrgan-x4plus-anime"
+    model_name="realesrgan-x4plus-anime"
 else
-	model_name="realesrgan-x4plus"
+    model_name="realesrgan-x4plus"
 fi
 
 for image in "${images[@]}"; do

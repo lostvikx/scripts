@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-# script to rename file in the current directory to random names (sha256 hash).
-# usage: rename-file file1 [file2 ...]
+# Script to rename a file to a random filename (sha256 hash).
+# Usage: rename-file file1 [file2 ...]
 
 print_usage() {
-  echo "usage: rename-file file1 [file2 ...]"
-  echo "renames specified files based on sha-256 hash of the file content."
-  echo
-  echo "options:"
-  echo "    -h, --help        shows this help message."
+    echo "usage: rename-file file1 [file2 ...]"
+    echo "renames specified files based on sha-256 hash of the file content."
+    echo
+    echo "options:"
+    echo "    -h, --help        shows this help message."
 }
 
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
@@ -18,32 +18,31 @@ fi
 
 if [[ "$#" -eq 0 ]]; then
     echo "Error: No files provided."
-	print_usage
-	exit 1
+    print_usage
+    exit 1
 fi
 
 for file in "$@"; do
-	if [[ -f "$file" ]]; then
-
+    if [[ -f "$file" ]]; then
         dirpath=$(dirname "$file")
         filename=$(basename "$file")
+        extension="${filename##*.}"
 
-		extension="${filename##*.}"
-		if [[ "$extension" == "$filename" ]]; then
-			extension=""
-		else
-			extension=".$extension"
-		fi
-		
-		newname="$(sha256sum "$file" | awk '{print substr($1,1,16)}')${extension}"
+        if [[ "$extension" == "$filename" ]]; then
+            extension=""
+        else
+            extension=".$extension"
+        fi
+
+        newname="$(sha256sum "$file" | awk '{print substr($1,1,16)}')${extension}"
         newfile="${dirpath}/${newname}"
 
-		if [[ ! -e "$newfile" ]]; then
-			mv "$file" "$newfile"
-		else
-			echo "collision detected: $newfile already exists, skipping $file"
-		fi
-	else
-		echo "skipping: $file is not a file."
-	fi
+        if [[ ! -e "$newfile" ]]; then
+            mv "$file" "$newfile"
+        else
+            echo "collision detected: $newfile already exists, skipping $file"
+        fi
+    else
+        echo "skipping: $file is not a file."
+    fi
 done
