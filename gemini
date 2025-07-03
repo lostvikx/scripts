@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+source $HOME/programming/scripts/.env
+
+# Check Gemini API key
+if [ -z "$GEMINI_API_KEY" ]; then
+    echo "Error: GEMINI_API_KEY environment variable is not set."
+    echo 'Please set it using: export GEMINI_API_KEY="YOUR_API_KEY"'
+    exit 1
+fi
+
+SAVE_TO_CWD=false
+PROMPT=""
+USAGE="Usage: gemini [-s|--save] \"Your question here\""
+
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        -s|--save)
+            SAVE_TO_CWD=true
+            ;;
+        *)
+            if [ -z "$PROMPT" ]; then
+                PROMPT="$1"
+            else
+                echo "Error: Too many arguments. Only one prompt is allowed."
+                echo $USAGE
+                exit 1
+            fi
+            ;;
+    esac
+    shift
+done
+
+if [ -z "$PROMPT" ]; then
+    echo $USAGE
+    exit 1
+fi
+
+# Construct JSON payload (prompt)
+JSON_PAYLOAD=$(jq -n --arg prompt "$PROMPT" '{"contents": [{"parts": [{"text": $prompt}]}]}')
+
+echo "Generating response..."
+
+# Output file
+OUTPUT_FILE="/tmp/gemini_response.md"
+
+if [ "$SAVE_TO_CWD" = true ]; then
+    OUTPUT_FILE="./gemini_response.md"
+fi
+
+# Gemini API
+curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" \
+    -H "x-goog-api-key: $GEMINI_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d "$JSON_PAYLOAD" | jq -r '.candidates[0].content.parts[0].text' > "$OUTPUT_FILE" 2> /dev/null
+
+if [ -s "$OUTPUT_FILE" ]; then
+    glow --pager "$OUTPUT_FILE"
+    echo "Output file: $OUTPUT_FILE"
+else
+    echo "Error: Could not retrieve a response from Gemini API or response was empty."
+    rm -f "$OUTPUT_FILE" # Clean up empty file
+    exit 1
+fi

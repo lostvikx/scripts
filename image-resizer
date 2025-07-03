@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+dimensions="1920x1080"
+
+print_usage() {
+    echo "Usage: image-resize image1 [image2 ...] [OPTIONS]"
+    echo
+    echo "Resize image(s) to the given dimensions."
+    echo
+    echo "Arguments:"
+    echo "    <image>                          Path to image file."
+    echo
+    echo "Options:"
+    echo "    -d, --dimensions <string>        Output dimensions for the image."
+    echo "                                     (default: 1920x1080)"
+}
+
+if [[ "$#" -eq 0 ]]; then
+    print_usage
+    exit 1
+fi
+
+images=()
+
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        -d|--dimensions)
+            shift
+            dimensions="$1"
+            ;;
+        -h|--help)
+            print_usage
+            exit 0
+            ;;
+        -*)
+            echo "Error: Unknown option $1"
+            exit 1
+            ;;
+        *)
+            images+=("$1")
+            ;;
+    esac
+    shift
+done
+
+if [[ "${#images[@]}" -eq 0 ]]; then
+    echo "Error: No image files provided."
+    exit 1
+fi
+
+for image in "${images[@]}"; do
+    if [[ ! -f "$image" ]]; then
+        echo "Skipping: $image not found."
+        continue
+    fi
+
+    file_name="${image%.*}"
+    file_ext="${image##*.}"
+    output="${file_name}_new.${file_ext}"
+
+    convert "$image" -gravity center -thumbnail "${dimensions}^" -extent "$dimensions" "$output"
+done

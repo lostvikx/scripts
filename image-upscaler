@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+
+esrgan="$HOME/Applications/realesrgan-ncnn-vulkan-20220424-ubuntu/realesrgan-ncnn-vulkan"
+
+model="anime"
+scale="1"
+
+print_usage() {
+	echo "Usage: image-upscaler image1 [image2 ...] [OPTIONS]"
+	echo
+    echo "Upscale image(s) to 4x using a selected model. Supports downscaling with a scale factor."
+	echo
+	echo "Arguments:"
+	echo "    <image>                    Path to input image file."
+	echo
+	echo "Options:"
+	echo "    -m, --model <string>       Upscaling model: 'anime' or 'real'."
+	echo "                               (default: anime)"
+	echo
+	echo "    -s, --scale <float>        Resize image scale between 0 and 1."
+	echo "                               (default: 1)"
+	echo
+	echo "    -h, --help                 Display this help message."
+}
+
+if [[ "$#" -eq 0 ]]; then
+    print_usage
+    exit 1
+fi
+
+images=()
+
+# Handle arguments and options.
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		-m|--model)
+			shift
+			if [[ "$1" == "anime" || "$1" == "real" ]]; then
+				model="$1"
+			else
+				echo "Error: Invalid model. Use 'anime' or 'real'."
+				exit 1
+			fi
+			;;
+		-s|--scale)
+			shift
+			if [[ "$1" =~ ^0?\.[0-9]+$ || "$1" == "1" ]]; then
+				scale="$1"
+			else
+				echo "Error: Scale must be a float between 0 and 1."
+				exit 1
+			fi
+			;;
+		-h|--help)
+			print_usage
+			exit 0
+			;;
+		-*)
+			echo "Error: Unknown option $1"
+			exit 1
+			;;
+		*)
+            images+=("$1")
+			;;
+	esac
+	shift
+done
+
+if [[ "${#images[@]}" -eq 0 ]]; then
+    echo "Error: No image files provided."
+    exit 1
+fi
+
+if [[ "$model" == "anime" ]]; then
+	model_name="realesrgan-x4plus-anime"
+else
+	model_name="realesrgan-x4plus"
+fi
+
+for image in "${images[@]}"; do
+    if [[ ! -f "$image" ]]; then
+        echo "Skipping: $image not found."
+        continue
+    fi
+
+    file_name="${image%.*}"
+    raw_output="${file_name}_raw.png"
+    output="${file_name}_up.png"
+
+    # Processing image.
+    echo "Process: Upscaling $image using model $model_name"
+    $esrgan -i "$image" -o "$raw_output" -n "$model_name" >/dev/null 2>&1
+
+    if awk "BEGIN {exit !($scale < 1)}"; then
+        percent=$(awk "BEGIN { printf \"%.2f\", $scale * 100 }")
+        echo "Process: Resizing image to ${percent}% of upscaled."
+        convert "$raw_output" -resize "${percent}%" "$output"
+        rm -f "$raw_output"
+    else
+        mv "$raw_output" "$output"
+    fi
+done

@@ -1,0 +1,25 @@
+#! /bin/bash
+
+# Script: darken-image
+# Description: Darkens an image using ImageMagick's convert command.
+# Usage: darken-image <image_file> [darkness_percentage]
+# Example: darken-image image.png 50
+
+if [[ $# -lt 1 ]]; then
+    echo "Usage: darken-image <image_file> [darkness_percentage]"
+    exit 1
+fi
+
+image="$1"
+darkness_percentage="${2:-50}"
+
+if [[ ! -f "$image" ]]; then
+    echo "Error: '$image' not found."
+    exit 1
+fi
+
+file_name="${image%.*}"
+file_ext="${image##*.}"
+out_file="${file_name}_dark.${file_ext}"
+
+convert "$image" -fill black -colorize "$darkness_percentage" "$out_file"
