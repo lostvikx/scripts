@@ -33,9 +33,9 @@ def download_thumbnail(url: str) -> None:
  
     res = None
     valid_urls = [
-            f"https://i.ytimg.com/vi_webp/{video_id}/maxresdefault.webp", 
-            f"https://i.ytimg.com/vi_webp/{video_id}/hqdefault.webp", 
-            f"https://i.ytimg.com/vi_webp/{video_id}/default.webp"
+        f"https://i.ytimg.com/vi_webp/{video_id}/maxresdefault.webp", 
+        f"https://i.ytimg.com/vi_webp/{video_id}/hqdefault.webp", 
+        f"https://i.ytimg.com/vi_webp/{video_id}/default.webp"
     ] 
 
     for thumbnail_url in valid_urls:
