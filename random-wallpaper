@@ -1,12 +1,12 @@
 #!/bin/bash
 
-if [ -z "$1" ]; then
-    echo "Usage: random-wallpaper <path_to_wallpaper_directory>"
-    echo "Error: No wallpaper directory provided."
-    exit 1
-fi
+# if [ -z "$1" ]; then
+#     echo "Usage: random-wallpaper <path_to_wallpaper_directory>"
+#     echo "Error: No wallpaper directory provided."
+#     exit 1
+# fi
 
-WALLPAPER_DIR="$1"
+WALLPAPER_DIR="${1:-/home/vik/Pictures/walls}"
 
 if [ ! -d "$WALLPAPER_DIR" ]; then
     echo "Error: Wallpaper directory '$WALLPAPER_DIR' not found."
