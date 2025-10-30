@@ -1,0 +1,38 @@
+#!/bin/env bash
+
+print_usage() {
+    echo "Usage: bg-setter <image_file>"
+    echo "Description: Change LUT of image to a theme and set it as background."
+}
+
+if [ "$#" -eq 0 ]; then
+    print_usage
+    exit 1
+fi
+
+REQUIRED_CMDS=('lutgen' 'feh')
+
+for CMD in "${REQUIRED_CMDS[@]}"; do
+    if ! command -v "$CMD" > /dev/null 2>&1; then
+        echo "ERROR: Command $CMD does not exists."
+        exit 1
+    fi
+done
+
+THEME='catppuccin-mocha'
+IMAGE="$1"
+IMG_EXT="${IMAGE##*.}"
+OUT_IMAGE="$HOME/bg_img.$IMG_EXT"
+
+if [ -z $IMAGE ]; then
+    echo "ERROR: Image file not found."
+    exit 1
+fi
+
+lutgen apply --palette $THEME $IMAGE --output $OUT_IMAGE &> /dev/null
+betterlockscreen -u $OUT_IMAGE
+
+betterlockscreen -w
+#feh $OUT_IMAGE --bg-fill --no-fehbg
+
+rm "$OUT_IMAGE"

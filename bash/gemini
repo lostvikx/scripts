@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source $HOME/programming/scripts/.env
+source $HOME/.env
 
 # Check Gemini API key
 if [ -z "$GEMINI_API_KEY" ]; then
@@ -10,20 +10,36 @@ if [ -z "$GEMINI_API_KEY" ]; then
 fi
 
 SAVE_TO_CWD=false
+QUIET=false
 PROMPT=""
-USAGE="Usage: gemini [-s|--save] 'Your question here'"
+
+print_usage() {
+    echo "Usage: gemini [OPTIONS] 'Your question here.'"
+    echo
+    echo "Uses the gemini-2.5-flash LLM to generate a response to your question."
+    echo
+    echo "Arguments:"
+    echo "    <question>                        A question to ask the LLM."
+    echo
+    echo "Options:"
+    echo "    -s, --save                        Save output to the current directory."
+    echo "    -q, --quiet                       Only output the response from the LLM."
+}
 
 while [[ "$#" -gt 0 ]]; do
     case "$1" in
         -s|--save)
             SAVE_TO_CWD=true
             ;;
+        -q|--quiet)
+            QUIET=true
+            ;;
         *)
             if [ -z "$PROMPT" ]; then
                 PROMPT="$1"
             else
                 echo "Error: Too many arguments. Only one prompt is allowed."
-                echo $USAGE
+                print_usage
                 exit 1
             fi
             ;;
@@ -32,20 +48,22 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [ -z "$PROMPT" ]; then
-    echo $USAGE
+    print_usage
     exit 1
 fi
 
 # Construct JSON payload (prompt)
 JSON_PAYLOAD=$(jq -n --arg prompt "$PROMPT" '{"contents": [{"parts": [{"text": $prompt}]}]}')
 
-echo "Generating response..."
+if [ "$QUIET" = false ]; then
+    echo "Generating response..."
+fi
 
 # Output file
-OUTPUT_FILE="/tmp/gemini_response.md"
+RESPONSE_FILE="/tmp/gemini_response.md"
 
 if [ "$SAVE_TO_CWD" = true ]; then
-    OUTPUT_FILE="./gemini_response.md"
+    RESPONSE_FILE="./gemini_response.md"
 fi
 
 # Gemini API
@@ -53,13 +71,16 @@ curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flas
     -H "x-goog-api-key: $GEMINI_API_KEY" \
     -H 'Content-Type: application/json' \
     -X POST \
-    -d "$JSON_PAYLOAD" | jq -r '.candidates[0].content.parts[0].text' > "$OUTPUT_FILE" 2> /dev/null
+    -d "$JSON_PAYLOAD" | jq -r '.candidates[0].content.parts[0].text' > "$RESPONSE_FILE" 2> /dev/null
 
-if [ -s "$OUTPUT_FILE" ]; then
-    glow --pager "$OUTPUT_FILE"
-    echo "Output file: $OUTPUT_FILE"
-else
+if ! [ -s "$RESPONSE_FILE" ]; then
     echo "Error: Could not retrieve a response from Gemini API or response was empty."
-    rm -f "$OUTPUT_FILE" # Clean up empty file
+    rm -f "$RESPONSE_FILE"    # Clean up empty file
     exit 1
 fi
+
+if [ "$QUIET" = false ]; then
+    echo "Output file: $RESPONSE_FILE"
+fi
+
+cat "$RESPONSE_FILE"
