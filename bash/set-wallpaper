@@ -19,7 +19,7 @@ for CMD in "${REQUIRED_CMDS[@]}"; do
     fi
 done
 
-THEME='catppuccin-mocha'
+THEME='catppuccin-mocha'  # set a custom theme
 IMAGE="$1"
 IMG_EXT="${IMAGE##*.}"
 OUT_IMAGE="$HOME/bg_img.$IMG_EXT"
