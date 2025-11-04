@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Directory to save screenshots
+SAVE_DIR="$HOME/Pictures/Screenshots"
+mkdir -p "$SAVE_DIR"
+
+# Generate a timestamped filename
+IMG_TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+IMG_PATH="$SAVE_DIR/${IMG_TIMESTAMP}.png"
+
+# Capture the screenshot
+maim --noopengl "$IMG_PATH" && notify-send "Screenshot Captured" "File saved to ~/Pictures/Screenshots"
