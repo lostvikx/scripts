@@ -3,7 +3,7 @@
 mkdir -p ~/.local/bin
 mkdir -p ~/.local/opt
 
+stow -t ~ home
 stow -t ~/.local/bin bash
 stow -t ~/.local/bin python
-stow -t ~ home
 stow -t ~/.local/opt programs

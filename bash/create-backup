@@ -1,0 +1,21 @@
+#!/bin/bash
+
+borg create                                     \
+    --stats                                     \
+    --list                                      \
+    --progress                                  \
+    --compression lz4                           \
+    --exclude-caches                            \
+    --exclude $HOME/.local                      \
+    --exclude $HOME/.var                        \
+    --exclude $HOME/.rustup                     \
+    --exclude $HOME/.cache                      \
+    --exclude $HOME/.wine                       \
+    --exclude $HOME/.mozilla                    \
+    --exclude $HOME/.cargo                      \
+    --exclude $HOME/Torrents                    \
+    --exclude $HOME/Games/PS2/games             \
+    --exclude $HOME/Games/Lutris/MagiPacks      \
+    --exclude $HOME/Games/Lutris/Installs       \
+    /run/media/vik/backup/backup-arch::{hostname}-{now}    \
+    $HOME
