@@ -1,8 +1,14 @@
 #!/bin/env bash
 
 print_usage() {
-    echo "Usage: bg-setter <image_file>"
+    echo "Usage: bg-setter [OPTIONS] <image>"
+    echo
     echo "Description: Change LUT of image to a theme and set it as background."
+    echo
+    echo "Options:"
+    echo "    -n, --no-lutgen    Do not apply theme to background."
+    echo
+    echo "    -h, --help         Display this help message."
 }
 
 if [ "$#" -eq 0 ]; then
@@ -10,7 +16,37 @@ if [ "$#" -eq 0 ]; then
     exit 1
 fi
 
-REQUIRED_CMDS=('lutgen' 'feh')
+THEME='catppuccin-mocha'  # set a custom theme
+NO_LUTGEN=false
+IMAGE=""
+
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        -n|--no-lutgen)
+            NO_LUTGEN=true
+            ;;
+        -h|--help)
+            print_usage
+            exit 0
+            ;;
+        -*)
+            echo "Error: Unknown option $1"
+            exit 1
+            ;;
+        *)
+            if [ -z "$IMAGE" ]; then
+                IMAGE="$1"
+            else
+                echo "Error: Too many arguments. Only one image should be provided."
+                print_usage
+                exit 1
+            fi
+            ;;
+    esac
+    shift
+done
+
+REQUIRED_CMDS=('lutgen' 'feh' 'betterlockscreen')
 
 for CMD in "${REQUIRED_CMDS[@]}"; do
     if ! command -v "$CMD" > /dev/null 2>&1; then
@@ -19,20 +55,24 @@ for CMD in "${REQUIRED_CMDS[@]}"; do
     fi
 done
 
-THEME='catppuccin-mocha'  # set a custom theme
-IMAGE="$1"
-IMG_EXT="${IMAGE##*.}"
-OUT_IMAGE="$HOME/bg_img.$IMG_EXT"
-
 if [ -z $IMAGE ]; then
     echo "ERROR: Image file not found."
     exit 1
 fi
 
-lutgen apply --palette $THEME $IMAGE --output $OUT_IMAGE &> /dev/null
-betterlockscreen -u $OUT_IMAGE
+IMG_EXT="${IMAGE##*.}"
+OUT_IMAGE="$HOME/bg_img.$IMG_EXT"
 
+if [ "$NO_LUTGEN" = true ]; then
+    cp $IMAGE $OUT_IMAGE
+else
+    lutgen apply --palette $THEME $IMAGE --output $OUT_IMAGE &> /dev/null
+fi
+
+betterlockscreen -u $OUT_IMAGE
 betterlockscreen -w
+
+# Use feh instead.
 #feh $OUT_IMAGE --bg-fill --no-fehbg
 
 rm "$OUT_IMAGE"
