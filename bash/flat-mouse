@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Usage: flat-mouse <xinput-id>
+# Example: flat-mouse 10
+
+ID="$1"
+
+# Speed range: -1.0 (slowest) to 1.0 (fastest)
+ACCEL_SPEED="-0.5"
+
+if [[ -z "$ID" ]]; then
+    echo "Usage: $0 <xinput-device-id>"
+    exit 1
+fi
+
+# Check device exists
+if ! xinput list --id-only "$ID" &>/dev/null; then
+    echo "Error: xinput device id '$ID' not found"
+    exit 1
+fi
+
+xinput set-prop "$ID" "libinput Accel Profile Enabled" 0, 1
+xinput set-prop "$ID" "libinput Accel Speed" "$ACCEL_SPEED"
