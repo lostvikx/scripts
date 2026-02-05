@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+CALIBRE="$HOME/Applications/calibre/calibre"
+LOGFILE="$HOME/.local/state/calibre.log"
+
+if [[ -x "$CALIBRE" ]]; then
+    exec "$CALIBRE" "$@" > "$LOGFILE" 2>&1 &
+else
+    echo "Error: Calibre not found or not executable at:"
+    echo "  $CALIBRE" >&2
+    exit 1
+fi
