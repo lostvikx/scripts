@@ -58,5 +58,5 @@ for image in "${images[@]}"; do
     file_ext="${image##*.}"
     output="${file_name}_new.${file_ext}"
 
-    convert "$image" -gravity center -thumbnail "${dimensions}^" -extent "$dimensions" "$output"
+    magick "$image" -gravity center -thumbnail "${dimensions}^" -extent "$dimensions" "$output"
 done
