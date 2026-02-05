@@ -1,9 +1,7 @@
 #!/bin/bash
 
 borg create                                     \
-    --stats                                     \
     --list                                      \
-    --progress                                  \
     --compression lz4                           \
     --exclude-caches                            \
     --exclude $HOME/.local                      \
