@@ -9,7 +9,9 @@ ID="$1"
 ACCEL_SPEED="0.0"
 
 if [[ -z "$ID" ]]; then
-    echo "Usage: $0 <xinput-device-id>"
+    xinput list
+    echo
+    echo "Usage: flat-mouse <mouse-id>"
     exit 1
 fi
 

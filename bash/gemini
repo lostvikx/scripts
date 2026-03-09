@@ -16,7 +16,7 @@ PROMPT=""
 print_usage() {
     echo "Usage: gemini [OPTIONS] 'Your question here.'"
     echo
-    echo "Uses the gemini-2.5-flash LLM to generate a response to your question."
+    echo "Uses the gemini-3-flash LLM to generate a response to your question."
     echo
     echo "Arguments:"
     echo "    <question>                        A question to ask the LLM."
@@ -67,7 +67,7 @@ if [ "$SAVE_TO_CWD" = true ]; then
 fi
 
 # Gemini API
-curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" \
+curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent" \
     -H "x-goog-api-key: $GEMINI_API_KEY" \
     -H 'Content-Type: application/json' \
     -X POST \
@@ -83,4 +83,4 @@ if [ "$QUIET" = false ]; then
     echo "Output file: $RESPONSE_FILE"
 fi
 
-cat "$RESPONSE_FILE"
+bat "$RESPONSE_FILE"
