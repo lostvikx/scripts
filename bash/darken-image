@@ -6,20 +6,26 @@
 # Example: darken-image image.png 50
 
 if [[ $# -lt 1 ]]; then
-    echo "Usage: darken-image <image_file> [darkness_percentage]"
+    echo "Usage: darken-image <image> [percent]"
+    echo
+    echo "Darkens an image using ImageMagick."
+    echo
+    echo "Arguments:"
+    echo "    image                 Path to image file."
+    echo "    percentage            Darkness level (0-100). Default: 50"
     exit 1
 fi
 
 image="$1"
-darkness_percentage="${2:-50}"
+darkness="${2:-50}"
 
 if [[ ! -f "$image" ]]; then
     echo "Error: '$image' not found."
     exit 1
 fi
 
-file_name="${image%.*}"
-file_ext="${image##*.}"
-out_file="${file_name}_dark.${file_ext}"
+base="${image%.*}"
+ext="${image##*.}"
+out="${base}_dark${darkness}.${ext}"
 
-convert "$image" -fill black -colorize "$darkness_percentage" "$out_file"
+magick "$image" -fill black -colorize "$darkness" "$out"
