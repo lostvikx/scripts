@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+DATE=$(date +%Y-%m-%d)
+
+pacman -Qqen > "native-$DATE.txt"
+pacman -Qqem > "foreign-$DATE.txt"
