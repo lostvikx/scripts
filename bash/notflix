@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # site is subject to change
 site="https://1337x.wtf"

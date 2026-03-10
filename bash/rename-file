@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # Script to rename a file to a random filename (sha256 hash).
-# Usage: rename-file file1 [file2 ...]
 
 print_usage() {
     echo "usage: rename-file file1 [file2 ...]"

@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
 # Script: darken-image
 # Description: Darkens an image using ImageMagick's convert command.
