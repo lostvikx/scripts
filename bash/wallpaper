@@ -25,7 +25,7 @@ if [ "$#" -eq 0 ]; then
     exit 1
 fi
 
-THEME='catppuccin-mocha'  # default theme
+THEME="catppuccin-mocha"  # default theme
 LUTGEN=false
 IMAGE=""
 
@@ -34,7 +34,7 @@ while [[ "$#" -gt 0 ]]; do
         -l|--lutgen)
             LUTGEN=true
             # Check if there is a following argument and it doesn't start with a hyphen
-            if [[ -n "$2" && "$2" != -* ]]; then
+            if [[ $# -gt 2 && "$2" != -* ]]; then
                 THEME="$2"
                 shift # Move past the theme value
             fi
@@ -60,7 +60,7 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-REQUIRED_CMDS=('lutgen' 'feh' 'betterlockscreen')
+REQUIRED_CMDS=("lutgen" "feh" "betterlockscreen")
 
 for CMD in "${REQUIRED_CMDS[@]}"; do
     if ! command -v "$CMD" > /dev/null 2>&1; then
@@ -86,7 +86,7 @@ fi
 betterlockscreen -u $OUT_IMAGE
 betterlockscreen -w
 
-# Use feh instead.
+# Option: Use feh.
 #feh $OUT_IMAGE --bg-fill --no-fehbg
 
 rm "$OUT_IMAGE"
