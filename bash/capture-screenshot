@@ -8,5 +8,10 @@ mkdir -p "$SAVE_DIR"
 IMG_TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 IMG_PATH="$SAVE_DIR/${IMG_TIMESTAMP}.png"
 
-# Capture the screenshot
-maim --noopengl "$IMG_PATH" && notify-send "Screenshot Captured" "File saved to ~/Pictures/Screenshots"
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    # Wayland (grim)
+    grim "$IMG_PATH" && notify-send "Screenshot Captured" "Saved to ~/Pictures/Screenshots"
+else
+    # X11 (maim)
+    maim --noopengl "$IMG_PATH" && notify-send "Screenshot Captured" "Saved to ~/Pictures/Screenshots"
+fi
